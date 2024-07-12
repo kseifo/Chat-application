@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online Users</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin: 0;
+        }
+        h1 {
+            color: #333;
+        }
+        #usersList {
+            list-style: none;
+            padding: 0;
+        }
+        #usersList li {
+            margin: 10px 0;
+        }
+        .user-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .user-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Online Users</h1>
+    <ul id="usersList"></ul>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/connect.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM fully loaded and parsed")
+            console.log("Hi ",getCookie(`username`));
+            fetch('/online')
+                .then(response => {return response.json();})
+                .then(users => {
+                    const usersList = document.getElementById('usersList');
+                    users.forEach(user => {
+                        const button = document.createElement('button');
+                        button.textContent = user.username;
+                        button.className = 'user-button';
+
+                        button.addEventListener('click', () => {
+                            localStorage.setItem('recipient', user.username);
+                            isInternalNavigation = true;
+                            window.location.href = `/chat/${getCookie(`username`)}/${user.username}`;
+                        });
+
+                        const li = document.createElement('li');
+                        li.appendChild(button);
+                        usersList.appendChild(li);
+                    });
+                })
+                .catch(error => console.error('Error fetching users:', error));
+        });
+            
+    </script>
+</body>
+</html>
