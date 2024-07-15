@@ -3,8 +3,8 @@ import session from 'express-session';
 import http from 'http';
 import path from 'path';
 import { Server } from 'socket.io';
-import userRouter from '../src/users/userRoute';
 import UserService from '../src/users/userService';
+import MessageController from '../src/messages/messageController';
 const jwt = require('jsonwebtoken');
 
 export const database = require('./../middlewares/db');
@@ -38,6 +38,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const userService = new UserService();
+const messageController = new MessageController();
+
 const nameTokenMap = new Map<string, string>();
 const userSocketMap = new Map<string, string>();
 
