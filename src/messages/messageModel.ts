@@ -19,7 +19,7 @@ Message.init({
         type: DataTypes.STRING,
         allowNull: false
     },
-    reciever: {
+    recipient: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -43,22 +43,22 @@ async function sync() {
 }
 sync();
 
-export async function addMessage(message: string, sender: string, receiver: string){
+export async function addMessage(message: string, sender: string, recipient: string){
     try{
-        const newMsg = await Message.create({message: message, sender: sender, receiver: receiver});
+        const newMsg = await Message.create({message: message, sender: sender, recipient: recipient});
     }
     catch(error){
         console.log(error)
     }
 }
 
-export async function getMessages(sender: string, receiver: string){
+export async function getMessages(sender: string, recipient: string){
     try{
         const messages = await Message.findAll({
             where: {
                 [Op.or]: [
-                    { sender: sender, receiver: receiver },
-                    { sender: receiver, receiver: sender }
+                    { sender: sender, recipient: recipient },
+                    { sender: recipient, recipient: sender }
                 ]
             },
             order: [['createdAt', 'ASC']]

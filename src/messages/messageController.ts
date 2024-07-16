@@ -7,22 +7,21 @@ export class MessageController{
     }
     public async createMessage(req: Request, res: Response){
         try{
-            const newMessage = await addMessage(req.body.message, req.body.sender, req.body.receiver);
+            const newMessage = await addMessage(req.body.message, req.body.sender, req.body.recipient);
             console.log('Message created');
-            res.redirect('/messages.html');
         }
         catch(error){
-            return res.status(400).json({error: 'Error creating message'});
+            return console.log(error);
         }
     }
 
     public async getMessages(req: Request, res: Response){
         try{
-            const messages = await getMessages(req.body.sender, req.body.receiver);
+            const messages = await getMessages(req.body.sender, req.body.recipient);
             return messages;
         }
         catch(error){
-            return res.status(500).json({error: 'Error fetching messages'});
+            console.log(error);
         }
     }
 }

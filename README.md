@@ -21,6 +21,8 @@ npm install express-session
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 ```
 
+Additionally, you need an Apache and mySQL server running if you want to use this application.
+
 ## Usage
 
 To run the application:

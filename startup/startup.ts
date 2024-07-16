@@ -102,6 +102,22 @@ app.get('/chat/:from/:to', async (req: any, res: any) => {
   res.sendFile(path.join(__dirname, '..', '..', 'static', 'index.html'));
 });
 
+app.post('/addmessage', async (req:any,res:any) => {
+  try {
+    const msg = await messageController.createMessage(req, res);
+
+  }
+  catch (error) {
+    console.log(error);
+  }
+});
+
+app.post('/getmessages', async (req:any,res:any) => {
+  const messages = await messageController.getMessages(req,res);
+
+  res.json(messages);
+});
+
 app.use(express.static('static'));
 
 // Socket.io Handling --------------------------------------------------------------

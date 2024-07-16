@@ -26,27 +26,60 @@
     <script src="/connect.js"></script>
 
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('form');
-      const input = document.getElementById('input');
-      const messages = document.getElementById('messages');
-      const recipient = localStorage.getItem('recipient');
-      
-      form.addEventListener('submit', (e) => {
-        console.log("The current url: ",window.location.href);
-        console.log("The recipient: ",recipient);
-        e.preventDefault();
-        if (input.value) {
-          console.log("Emitting message");
-          socket.emit('chat message', { message: input.value, recipient: recipient });
+      document.addEventListener('DOMContentLoaded', async () => {
 
-          const item = document.createElement('li');
-          item.textContent = getCookie('username')+': ' + input.value;
-          messages.appendChild(item);
-          
-          input.value = '';
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+        const recipient = localStorage.getItem('recipient');
+        
+        try {
+          const response = await fetch('/getmessages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ sender: getCookie('username'), recipient: recipient })
+          });
+
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+
+          const msgs = await response.json();
+
+          for (const message of msgs) {
+            const item = document.createElement('li');
+            item.textContent = message.sender + ': ' + message.message;
+            messages.appendChild(item);
+          }
+
+        } catch (error) {
+          console.error('Fetch error:', error);
         }
-      });
+
+        form.addEventListener('submit', (e) => {
+          console.log("The current url: ",window.location.href);
+          console.log("The recipient: ",recipient);
+          e.preventDefault();
+          if (input.value) {
+            socket.emit('chat message', { message: input.value, recipient: recipient });
+
+            fetch('/addmessage', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ message: input.value, recipient: recipient, sender: getCookie('username')}),
+            });
+
+            const item = document.createElement('li');
+            item.textContent = getCookie('username')+': ' + input.value;
+            messages.appendChild(item);
+            
+            input.value = '';
+          }
+        });
       })
     </script>
   </body>
