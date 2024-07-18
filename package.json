@@ -12,6 +12,7 @@
   "author": "Kareem Seifo",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "sequelize": "^6.37.3",

@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username: getCookie('username') })
+        body: JSON.stringify({ username: getCookie('username')})
       });
     }
   });
@@ -114,5 +114,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+
+  socket.on('wrong password', () => {
+    alert('Wrong password');
+  });
 });
 

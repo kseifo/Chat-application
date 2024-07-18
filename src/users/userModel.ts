@@ -1,7 +1,11 @@
 import { DataTypes, Sequelize } from 'sequelize';
-import {db} from './../../middlewares/db.js';
-import {Model} from 'sequelize';
-export class User extends Model{}
+import { db } from './../../middlewares/db.js';
+import { Model } from 'sequelize';
+const bcrypt = require('bcrypt');
+
+export class User extends Model {
+    public password!: string;
+}
 
 User.init({
     id: {
@@ -13,58 +17,94 @@ User.init({
         type: DataTypes.STRING,
         allowNull: false
     },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     isDeleted: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     }
-    }, {
-      modelName: 'user',
-      sequelize: db
-    });
-  
+}, {
+    modelName: 'user',
+    sequelize: db
+});
+
+User.beforeCreate(async (user, options) => {
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    user.password = hashedPassword;
+});
+
 async function sync() {
     try {
-      await db.sync({ force: true });
-      console.log("Tables created");
+        await db.sync();
+        console.log("Tables created");
     } catch (error) {
-      console.error(error);
+        console.error(error);
     }
-  }
+}
 sync();
 
-export async function addUser(username: string){
-    try{
-        const newUser = await User.create({ username});
-    }catch(error){
+export async function addUser(username: string, password: string) {
+    try {
+        console.log('username: ', username);
+        console.log('password: ', password);
+        const newUser = await User.create({ username: username, password: password });
+    } catch (error) {
         console.error(error);
     }
 }
 
-export async function deleteUser(username: string){
-    try{
-        const [updatedRows] = await User.update({ isDeleted: true }, { where: { username } });
-        if(updatedRows > 0){
+export async function deleteUser(username: string) {
+    try {
+        const user = await User.findOne({ where: { username } });
+        if (user) {
+            await User.update({ isDeleted: true }, { where: { username } });
             return 1;
-        }else{
+        } else {
             return 0;
         }
-    }
-    catch(error){
+    } catch (error) {
         console.error(error);
     }
 }
 
-function getUser(id: number){
-    try{
-        const target = User.findByPk(id);
-        if(target){
-            return target;
+export async function makeUserOnline(username: string) {
+    try {
+        const user = await User.findOne({ where: { username } });
+        if (user) {
+            await User.update({ isDeleted: false }, { where: { username } });
+            return 1;
+        } else {
+            return 0;
         }
-        else{
-            console.log("User not found");
-        }
+    } catch (error) {
+        console.error(error);
     }
-    catch(error){
+}
+
+export async function getUserbyName(username: string) {
+    try {
+        const target = await User.findOne({ where: { username } });
+        if (target) {
+            return target;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function getHashedPassword(username: string) {
+    try {
+        const target = await User.findOne({ where: { username } });
+        if (target) {
+            return target.password;
+        } else {
+            return null;
+        }
+    } catch (error) {
         console.error(error);
     }
 }

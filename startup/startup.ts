@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 import UserService from '../src/users/userService';
 import MessageController from '../src/messages/messageController';
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 export const database = require('./../middlewares/db');
 
@@ -54,11 +55,30 @@ app.post('/login', async (req: any, res: any) => {
 
       nameTokenMap.set(req.body.username, token);
 
-      const user = await userService.createUser(req, res);
-
-      io.emit('someonelogged', { username: req.body.username });
     }
-  } catch (error) {
+    //check if user is already in the database
+    if((await userService.getUserName(req.body.username)!=null)){
+      const dbpass = await userService.getHashedPassword(req.body.username);
+
+      const match = await bcrypt.compare(req.body.password, dbpass);
+      if(match){
+        userService.makeUserOnline(req, res);
+      }
+      else{
+        const scktid = userSocketMap.get(req.body.username);
+        if (scktid) {
+          io.to(scktid).emit('wrong password');
+        }
+      }
+    }
+    //if user is not in the database, create a new user
+    else{
+      const user = await userService.createUser(req, res);
+    }
+      
+    io.emit('someonelogged', { username: req.body.username });
+    }
+  catch (error) {
     console.error('Error during login:', error);
     res.status(500).send('Internal Server Error');
   }
@@ -75,11 +95,13 @@ app.post('/hash', (req: any, res: any) => {
 
 app.post('/disconnect', async (req, res) => {
   try {
-    const { username } = req.body;
+    const username = req.body.username;
     console.log("the guy that disconnected: ", username);
     if (username) {
       await userService.deleteUser(username);
+      
       nameTokenMap.delete(username);
+
       io.emit('someoneleft', { username });
       res.status(200).send('User disconnected');
     } else {
