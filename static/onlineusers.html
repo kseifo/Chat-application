@@ -42,8 +42,6 @@
     <script src="/connect.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("DOM fully loaded and parsed")
-            console.log("Hi ",getCookie(`username`));
             fetch('/online')
                 .then(response => {return response.json();})
                 .then(users => {

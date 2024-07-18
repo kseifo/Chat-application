@@ -38,7 +38,6 @@ User.beforeCreate(async (user, options) => {
 async function sync() {
     try {
         await db.sync();
-        console.log("Tables created");
     } catch (error) {
         console.error(error);
     }
@@ -47,8 +46,6 @@ sync();
 
 export async function addUser(username: string, password: string) {
     try {
-        console.log('username: ', username);
-        console.log('password: ', password);
         const newUser = await User.create({ username: username, password: password });
     } catch (error) {
         console.error(error);

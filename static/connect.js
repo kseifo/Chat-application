@@ -12,7 +12,6 @@ function getCookie(name) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('Fetching hash');
   const name = getCookie('username');
 
   try {
@@ -32,28 +31,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const data = text ? JSON.parse(text) : {};
     token = data;
 
-    console.log('Corresponding token: ', token);
-    console.log('Data: ', data);
   } catch (error) {
     console.error('Fetch error:', error);
   }
 
-  console.log("Received token: ", token);
-
   let isInternalNavigation = false;
 
   window.addEventListener('beforeunload', function () {
-    console.log("beforeunload");
     sessionStorage.setItem('isTabClosed', 'true');
   });
 
   window.addEventListener('load', function () {
-    console.log("load");
     sessionStorage.setItem('isTabClosed', 'false');
   });
 
   window.addEventListener('unload', function () {
-    console.log("unload");
     if (!isInternalNavigation && sessionStorage.getItem('isTabClosed') === 'true') {
       fetch('/disconnect', {
         method: 'POST',
@@ -74,9 +66,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   window.socket = socket;
 
-  socket.on('connect', () => {
-    console.log('You are:' + getCookie('username'));
-  });
 
   socket.on('someonelogged', (data) => {
     const usersList = document.getElementById('usersList');
@@ -106,8 +95,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   socket.on('chat message', (msg) => {
     if (window.location.href.includes(localStorage.getItem('recipient'))) {
-      console.log("Message received: ", msg);
-      console.log("Recipient: ", localStorage.getItem('recipient'));
       const item = document.createElement('li');
       item.textContent = localStorage.getItem('recipient') +': '+ msg;
       messages.appendChild(item);

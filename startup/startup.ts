@@ -96,7 +96,6 @@ app.post('/hash', (req: any, res: any) => {
 app.post('/disconnect', async (req, res) => {
   try {
     const username = req.body.username;
-    console.log("the guy that disconnected: ", username);
     if (username) {
       await userService.deleteUser(username);
       

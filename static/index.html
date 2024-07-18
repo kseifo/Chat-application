@@ -59,8 +59,6 @@
         }
 
         form.addEventListener('submit', (e) => {
-          console.log("The current url: ",window.location.href);
-          console.log("The recipient: ",recipient);
           e.preventDefault();
           if (input.value) {
             socket.emit('chat message', { message: input.value, recipient: recipient });
