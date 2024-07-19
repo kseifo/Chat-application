@@ -20,6 +20,7 @@ npm install socket.io
 npm install express-session
 npm install bcrypt
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+When you run the curl command, run the 3 commands it says to start using nvm now.
 ```
 
 Additionally, you need an Apache and mySQL server running if you want to use this application.
