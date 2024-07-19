@@ -104,6 +104,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   socket.on('wrong password', () => {
     alert('Wrong password');
+    const password = document.getElementById('password');
+    password.value = '';
   });
 });
 

@@ -37,7 +37,7 @@ User.beforeCreate(async (user, options) => {
 
 async function sync() {
     try {
-        await db.sync();
+        await db.sync({force: true});
     } catch (error) {
         console.error(error);
     }

@@ -35,7 +35,7 @@ Message.init({
 
 async function sync() {
     try {
-        await db.sync();
+        await db.sync({force: true});
         console.log("Tables created");
     } catch (error) {
         console.error(error);
