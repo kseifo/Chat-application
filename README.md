@@ -18,6 +18,7 @@ npm install sequelize
 npm install express
 npm install socket.io
 npm install express-session
+npm install bcrypt
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 ```
 
